@@ -1,4 +1,6 @@
 import re
+import subprocess
+import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -31,4 +33,18 @@ def parse_arction(lm_output: str) -> str:
     else:
         return ""
 
+def execute_action(command: str) -> str:
+    """执行动作并返回输出"""
+    result = subprocess.run(
+        command,
+        shell=True,
+        text=True,
+        env=os.environ,
+        encoding="utf-8",
+        errors="replace"
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=30
+    )
+    return result.stdout
 
