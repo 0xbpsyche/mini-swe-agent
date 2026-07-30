@@ -1,3 +1,5 @@
+import re
+
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -16,5 +18,17 @@ def query_lm(messages):
     )
     return response.output_text
 
-messages = [{"role": "user", "content": "掷一个 d20 骰子"}]
-print(query_lm(messages))
+def parse_arction(lm_output: str) -> str:
+    """从模型回复中提取bash-action代码块里的命令"""
+    matches = re.findall(
+        r"```bash-action\s*\n(.*?)\n```"
+        lm_output,
+        re.DOTALL
+    )
+
+    if matches:
+        return matches[0].strip()
+    else:
+        return ""
+
+
