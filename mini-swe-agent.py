@@ -41,10 +41,21 @@ def execute_action(command: str) -> str:
         text=True,
         env=os.environ,
         encoding="utf-8",
-        errors="replace"
+        errors="replace",
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         timeout=30
     )
     return result.stdout
 
+messages = [{
+    "role": "system",
+    "content": (
+        "你是一个乐于助人的助手。当想运行命令时，请把它包装成"
+        "```bash-actiong\n<command>\n```。任务完成时，请执行exit命令。"
+    )
+}, {
+    "role": "user",
+    "content": "列出当前目录中的文件"
+
+}]
