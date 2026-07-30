@@ -20,10 +20,10 @@ def query_lm(messages):
     )
     return response.output_text
 
-def parse_arction(lm_output: str) -> str:
+def parse_action(lm_output: str) -> str:
     """从模型回复中提取bash-action代码块里的命令"""
     matches = re.findall(
-        r"```bash-action\s*\n(.*?)\n```"
+        r"```bash-action\s*\n(.*?)\n```",
         lm_output,
         re.DOTALL
     )
@@ -52,10 +52,22 @@ messages = [{
     "role": "system",
     "content": (
         "你是一个乐于助人的助手。当想运行命令时，请把它包装成"
-        "```bash-actiong\n<command>\n```。任务完成时，请执行exit命令。"
+        "```bash-action\n<command>\n```。任务完成时，请执行exit命令。"
     )
 }, {
     "role": "user",
     "content": "列出当前目录中的文件"
 
 }]
+
+while True:
+    lm_output = query_lm(messages)
+    print("模型输出", lm_output)
+    messages.append({"role": "assistant", "content": lm_output})
+    action = parse_action(lm_output)
+    print("动作", action)
+    if action == "exit":
+        break
+    output = execute_action(action)
+    print("执行输出", output)
+    messages.append({"role": "user", "content": output})
